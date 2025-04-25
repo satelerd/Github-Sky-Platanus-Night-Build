@@ -22,11 +22,11 @@ Plan de desarrollo por fases. Cada fase completada representa un punto de contro
     - [X] Mapear cada día (`date`, `count`) a coordenadas esféricas (θ, φ) en una cúpula/esfera imaginaria.
     - [X] Usar `count` para determinar la escala y/o luminosidad de cada estrella.
     - [X] Renderizar estrellas eficientemente (ej. `InstancedMesh` o `Points`).
-- [ ] **Fase 4: Ambientación**
-    - [ ] Crear un suelo simple (ej. `PlaneGeometry` con textura o material).
-    - [ ] Añadir montañas low-poly decorativas en el horizonte (ej. `ConeGeometry` variadas).
-    - [ ] Configurar iluminación ambiental (ej. `HemisphereLight`, `AmbientLight`).
-    - [ ] Añadir un `Skybox` o fondo estrellado (ej. `drei/Sky` o textura).
+- [X] **Fase 4: Ambientación**
+    - [X] Crear un suelo simple (ej. `PlaneGeometry` con textura o material).
+    - [X] Añadir montañas low-poly decorativas en el horizonte (ej. `ConeGeometry` variadas).
+    - [X] Configurar iluminación ambiental (ej. `HemisphereLight`, `AmbientLight`).
+    - [X] Añadir un `Skybox` o fondo estrellado (ej. `drei/Sky` o textura).
 - [ ] **Fase 5: Portal-hub (Interacción)**
     - [ ] Crear un modelo 3D simple que represente el "portal" o punto de interacción inicial.
     - [ ] Implementar lógica de interacción (click, raycast, tecla "E") para mostrar un input de texto (usuario de GitHub).
