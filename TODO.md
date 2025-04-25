@@ -6,7 +6,7 @@ Plan de desarrollo por fases. Cada fase completada representa un punto de contro
     - [X] Inicializar proyecto Next.js (`app` router, TypeScript, ESLint, Tailwind).
     - [X] Crear `README.md` inicial.
     - [X] Crear `TODO.md` con fases.
-    - [ ] Configurar despliegue inicial en Vercel (opcional por ahora).
+    - [X] Configurar despliegue inicial en Vercel (opcional por ahora).
 - [X] **Fase 1: API de datos**
     - [X] Crear ruta `app/api/contributions/route.ts`.
     - [X] Implementar query GraphQL a la API de GitHub usando `GITHUB_TOKEN`.
