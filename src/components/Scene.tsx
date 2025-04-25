@@ -38,6 +38,7 @@ export default function Scene({ contributions }: SceneProps) {
             style={{ background: '#0A0A18' }} // Punto intermedio azul muy oscuro
             camera={{ fov: 75 }}
             shadows
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             onPointerDown={(_e) => { if (!isLocked) controlsRef.current?.lock(); }} // Volver a _e
         >
             {/* Añadir Niebla */}
