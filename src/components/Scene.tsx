@@ -35,7 +35,7 @@ export default function Scene({ contributions }: SceneProps) {
       <OrbitControls enableZoom={true} enablePan={true} />
 
       {/* Renderizar las estrellas */}
-      <Stars contributions={contributions} radius={100} />
+      <Stars contributions={contributions} />
 
       {/* Objeto de prueba ELIMINADO */}
       {/* <mesh>
