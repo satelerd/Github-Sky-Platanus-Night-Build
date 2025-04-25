@@ -15,8 +15,13 @@ interface StarsProps {
 
 // Geometría base para todas las estrellas (una esfera pequeña)
 const starGeometry = new THREE.SphereGeometry(0.5, 8, 8); // Radio 0.5, pocos segmentos
-// Material base (simple por ahora)
-const starMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+// Material base - Cambiar a Standard con emissive
+const starMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffffff, // Color base blanco
+    emissive: 0xffffff, // Emitir luz blanca
+    emissiveIntensity: 0.5, // Intensidad del brillo (ajustable)
+    roughness: 0.8, // No tan reflectante
+});
 
 export default function Stars({ contributions }: StarsProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null!); // Ref para el InstancedMesh
