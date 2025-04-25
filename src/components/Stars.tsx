@@ -12,7 +12,6 @@ interface Contribution {
 
 interface StarsProps {
   contributions: Contribution[];
-  radius?: number;
 }
 
 // Geometría base para todas las estrellas (una esfera pequeña)
@@ -20,7 +19,7 @@ const starGeometry = new THREE.SphereGeometry(0.5, 8, 8); // Radio 0.5, pocos se
 // Material base (simple por ahora)
 const starMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
-export default function Stars({ contributions, radius = 100 }: StarsProps) {
+export default function Stars({ contributions }: StarsProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null!); // Ref para el InstancedMesh
 
   // Calculamos las posiciones y escalas de las estrellas solo cuando cambian las contribuciones
@@ -84,10 +83,10 @@ export default function Stars({ contributions, radius = 100 }: StarsProps) {
     console.log(`Rendering ${instances.length} stars.`);
   }, [instances]);
 
-  // Podríamos añadir rotación lenta al cielo
-  useFrame((state, delta) => {
+  // Marcar parámetros no usados con _
+  useFrame((_state, _delta) => {
      if (meshRef.current) {
-       // meshRef.current.rotation.y += delta * 0.01;
+       // meshRef.current.rotation.y += _delta * 0.01;
      }
   });
 

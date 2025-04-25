@@ -2,7 +2,7 @@
 
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { useEffect } from 'react';
+// import { useEffect } from 'react'; // ELIMINAR - No se usa
 import Stars from './Stars'; // Importar el nuevo componente
 
 // Definir la interfaz para los datos que esperamos recibir
@@ -10,6 +10,7 @@ import Stars from './Stars'; // Importar el nuevo componente
 interface Contribution {
   date: string;
   count: number;
+  weekday: number;
 }
 
 // Definir las props que acepta el componente

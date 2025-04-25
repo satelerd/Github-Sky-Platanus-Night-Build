@@ -12,9 +12,10 @@ interface Contribution {
 
 // Mover la definición de SceneProps aquí si Scene.tsx no la exporta
 // O importar SceneProps desde Scene.tsx si la exporta
-interface SceneProps {
-  contributions: Contribution[];
-}
+// ELIMINAR - SceneProps no se usa aquí
+// interface SceneProps {
+//  contributions: Contribution[];
+// }
 
 // Importamos el componente Scene dinámicamente y deshabilitamos SSR
 const Scene = dynamic(() => import('@/components/Scene'), {
@@ -45,10 +46,14 @@ export default function Home() {
       const data: Contribution[] = await response.json();
       console.log(`[page.tsx] Received ${data.length} contributions. Setting state.`);
       setContributions(data);
-    } catch (err: any) {
+    } catch (err) {
+      let errorMessage = 'Failed to fetch contributions';
+      if (err instanceof Error) {
+          errorMessage = err.message;
+      }
       console.error("[page.tsx] Failed to fetch contributions:", err);
-      setError(err.message || 'Failed to fetch contributions');
-      setContributions([]); // Limpiar datos en caso de error
+      setError(errorMessage);
+      setContributions([]);
     } finally {
       console.log(`[page.tsx] Finished fetching for: ${user}`);
       setIsLoading(false);
