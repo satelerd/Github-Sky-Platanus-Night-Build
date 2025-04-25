@@ -6,8 +6,8 @@ import { RefObject, useState, useEffect, useMemo } from 'react';
 // import { PointerLockControls } from '@react-three/drei'; // No necesitamos importar aquí si usamos any
 
 interface PlayerProps {
-  // TODO: Encontrar el tipo correcto para la instancia de PointerLockControls
-  controlsRef: RefObject<any>; // Usar any temporalmente
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  controlsRef: RefObject<any>; // Usar any y deshabilitar linter
   groundRef: RefObject<THREE.Mesh>;
   isLocked: boolean;
 }

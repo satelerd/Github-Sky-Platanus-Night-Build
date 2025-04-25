@@ -23,12 +23,13 @@ interface SceneProps {
 }
 
 export default function Scene({ contributions }: SceneProps) {
-  const controlsRef = useRef<any>(null); // Ref para PointerLockControls
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const controlsRef = useRef<any>(null); // Volver a any y deshabilitar linter
   const groundRef = useRef<THREE.Mesh>(null!); // Ref para el suelo
   const [isLocked, setIsLocked] = useState(false);
 
   const handleCanvasClick = () => {
-    controlsRef.current?.lock();
+    controlsRef.current?.lock(); // Quitar ts-ignore si usamos any
   };
 
   return (
@@ -37,9 +38,7 @@ export default function Scene({ contributions }: SceneProps) {
             style={{ background: '#0A0A18' }} // Punto intermedio azul muy oscuro
             camera={{ fov: 75 }}
             shadows
-            onPointerDown={(_e) => {
-                if (!isLocked) controlsRef.current?.lock();
-            }}
+            onPointerDown={(e) => { if (!isLocked) controlsRef.current?.lock(); }} // Mantener sin _e
         >
             {/* Añadir Niebla */}
             <fog attach="fog" args={['#0A0A18', 100, 600]} /> {/* Mismo color que el fondo */}
@@ -57,14 +56,8 @@ export default function Scene({ contributions }: SceneProps) {
             {/* Controles FPS */}
             <PointerLockControls
                 ref={controlsRef}
-                onLock={() => {
-                    console.log('Pointer Locked');
-                    setIsLocked(true);
-                }}
-                onUnlock={() => {
-                    console.log('Pointer Unlocked');
-                    setIsLocked(false);
-                }}
+                onLock={() => { setIsLocked(true); }}
+                onUnlock={() => { setIsLocked(false); }}
             />
 
             {/* Renderizar las estrellas */}
