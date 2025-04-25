@@ -7,6 +7,17 @@ import { NextRequest, NextResponse } from 'next/server';
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_GRAPHQL_URL = 'https://api.github.com/graphql';
 
+// Definimos interfaces para un tipado más estricto
+interface ContributionDay {
+  contributionCount: number;
+  date: string;
+  weekday: number; // Incluido en la query aunque no se use directamente en la normalización
+}
+
+interface ContributionWeek {
+  contributionDays: ContributionDay[];
+}
+
 const GITHUB_CONTRIBUTIONS_QUERY = `
   query($userName: String!) {
     user(login: $userName) {
@@ -79,8 +90,8 @@ export async function GET(request: NextRequest) {
 
     // Normalización simple inicial: Aplanar los días
     const contributions: { date: string; count: number }[] = contributionCalendar.weeks.flatMap(
-        (week: { contributionDays: any[] }) =>
-            week.contributionDays.map((day: { date: string, contributionCount: number }) => ({
+        (week: ContributionWeek) =>
+            week.contributionDays.map((day: ContributionDay) => ({
                 date: day.date,
                 count: day.contributionCount,
             }))
