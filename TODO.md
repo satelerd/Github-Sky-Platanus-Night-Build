@@ -1,0 +1,42 @@
+# TODO - GitHub Sky
+
+Plan de desarrollo por fases. Cada fase completada representa un punto de control y potencialmente un PR.
+
+- [ ] **Fase 0: Kick-off**
+    - [X] Inicializar proyecto Next.js (`app` router, TypeScript, ESLint, Tailwind).
+    - [X] Crear `README.md` inicial.
+    - [X] Crear `TODO.md` con fases.
+    - [ ] Configurar despliegue inicial en Vercel (opcional por ahora).
+- [ ] **Fase 1: API de datos**
+    - [ ] Crear ruta `app/api/contributions/route.ts`.
+    - [ ] Implementar query GraphQL a la API de GitHub usando `GITHUB_TOKEN`.
+    - [ ] Normalizar datos de respuesta a formato `[{date, count}]`.
+    - [ ] Asegurar que la API devuelve un JSON con ~365 días de datos.
+- [ ] **Fase 2: Base 3D**
+    - [ ] Instalar dependencias: `three`, `@react-three/fiber`, `@react-three/drei`.
+    - [ ] Añadir componente `<Canvas>` de R3F a la página principal.
+    - [ ] Implementar controles de cámara básicos (ej. `OrbitControls` o `PointerLockControls`).
+    - [ ] Asegurar que se renderiza una escena 3D vacía y navegable.
+- [ ] **Fase 3: Generador de estrellas**
+    - [ ] Crear un componente que reciba los datos de contribuciones.
+    - [ ] Mapear cada día (`date`, `count`) a coordenadas esféricas (θ, φ) en una cúpula/esfera imaginaria.
+    - [ ] Usar `count` para determinar la escala y/o luminosidad de cada estrella.
+    - [ ] Renderizar estrellas eficientemente (ej. `InstancedMesh` o `Points`).
+- [ ] **Fase 4: Ambientación**
+    - [ ] Crear un suelo simple (ej. `PlaneGeometry` con textura o material).
+    - [ ] Añadir montañas low-poly decorativas en el horizonte (ej. `ConeGeometry` variadas).
+    - [ ] Configurar iluminación ambiental (ej. `HemisphereLight`, `AmbientLight`).
+    - [ ] Añadir un `Skybox` o fondo estrellado (ej. `drei/Sky` o textura).
+- [ ] **Fase 5: Portal-hub (Interacción)**
+    - [ ] Crear un modelo 3D simple que represente el "portal" o punto de interacción inicial.
+    - [ ] Implementar lógica de interacción (click, raycast, tecla "E") para mostrar un input de texto (usuario de GitHub).
+    - [ ] Al enviar el formulario/input, llamar al endpoint `/api/contributions`.
+    - [ ] Usar los datos recibidos para actualizar/reconstruir la escena del cielo estrellado.
+- [ ] **Fase 6: Pulido & FX**
+    - [ ] Añadir efectos visuales sutiles (ej. niebla, partículas, bloom).
+    - [ ] Implementar tooltips/información al pasar el cursor sobre una estrella (mostrar fecha, nº commits).
+- [ ] **Fase 7: Deploy & demo**
+    - [ ] Realizar el despliegue final a Vercel.
+    - [ ] Configurar la variable de entorno `GITHUB_TOKEN` en Vercel.
+    - [ ] Asegurar que la aplicación funciona en la URL pública.
+    - [ ] Preparar demo. 
