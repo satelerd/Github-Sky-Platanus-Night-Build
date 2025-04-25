@@ -3,7 +3,7 @@
 import * as THREE from 'three'; // Importar THREE completo
 import { Canvas } from '@react-three/fiber'; // Importar Canvas
 import { PointerLockControls } from '@react-three/drei'; // Mantener PointerLockControls
-import { useRef, useState, useEffect } from 'react'; // Necesitamos useEffect de nuevo
+import { useRef, useState } from 'react'; // Necesitamos useEffect de nuevo
 import Stars from './Stars'; // Importar el nuevo componente
 import WavyGround from './WavyGround'; // Importar suelo ondulado
 import Player from './Player'; // Importar el nuevo componente Player
@@ -37,7 +37,7 @@ export default function Scene({ contributions }: SceneProps) {
             style={{ background: '#0A0A18' }} // Punto intermedio azul muy oscuro
             camera={{ fov: 75 }}
             shadows
-            onPointerDown={(e) => {
+            onPointerDown={(_e) => {
                 if (!isLocked) controlsRef.current?.lock();
             }}
         >

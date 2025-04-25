@@ -3,11 +3,13 @@
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { RefObject, useState, useEffect, useMemo } from 'react';
+// import { PointerLockControls } from '@react-three/drei'; // No necesitamos importar aquí si usamos any
 
 interface PlayerProps {
-  controlsRef: RefObject<any>; // Ref a PointerLockControls
-  groundRef: RefObject<THREE.Mesh>; // Ref al mesh del suelo
-  isLocked: boolean; // Para saber si el Puntero está bloqueado
+  // TODO: Encontrar el tipo correcto para la instancia de PointerLockControls
+  controlsRef: RefObject<any>; // Usar any temporalmente
+  groundRef: RefObject<THREE.Mesh>;
+  isLocked: boolean;
 }
 
 const playerHeight = 5;
@@ -68,7 +70,7 @@ export default function Player({ controlsRef, groundRef, isLocked }: PlayerProps
   const moveDirection = useMemo(() => new THREE.Vector3(), []);
 
   useFrame((state, delta) => {
-    if (isLocked && groundRef.current && controlsRef.current) {
+    if (isLocked && groundRef.current && controlsRef.current?.getObject) {
       const camera = controlsRef.current.getObject();
 
       // --- Movimiento --- (Nueva Lógica)

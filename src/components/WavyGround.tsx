@@ -1,7 +1,7 @@
 'use client';
 
 import * as THREE from 'three';
-import { useMemo, useRef, forwardRef } from 'react';
+import { useMemo, forwardRef } from 'react';
 import { createNoise2D } from 'simplex-noise';
 
 const noiseFrequency = 0.01; // Qué tan "juntas" están las colinas
@@ -12,8 +12,6 @@ const tempColor = new THREE.Color(); // Para cálculos
 
 // Usar forwardRef para poder pasar una ref al mesh desde el componente padre
 const WavyGround = forwardRef<THREE.Mesh>((props, ref) => {
-  // Quitamos el useRef interno, usaremos el ref pasado
-  // const meshRef = useRef<THREE.Mesh>(null!);
   const noise2D = useMemo(() => createNoise2D(), []);
 
   const geometry = useMemo(() => {

@@ -3,9 +3,9 @@
 import * as THREE from 'three';
 import { useMemo, useRef, useEffect } from 'react';
 
-// Geometría base para las montañas (cono)
-// Ajusta estos valores para cambiar la forma base
-const mountainGeometry = new THREE.ConeGeometry(20, 60, 8); // Radio base, altura, segmentos radiales
+// Geometría base para las montañas (cono) - ELIMINAR ESTA CONSTANTE
+// const mountainGeometry = new THREE.ConeGeometry(20, 60, 8);
+
 // Material base - AHORA habilitamos vertexColors
 const mountainMaterial = new THREE.MeshStandardMaterial({
   // color: 0xaaaaaa, // El color base viene de los vértices
@@ -26,7 +26,7 @@ interface MountainsProps {
 export default function Mountains({ count = 50, radius = 400 }: MountainsProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null!);
 
-  // Geometría base - la creamos una vez
+  // Geometría base - se crea y usa aquí
   const baseGeometry = useMemo(() => {
       const baseRadius = 20;
       const baseHeight = 60;
