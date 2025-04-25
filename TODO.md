@@ -17,11 +17,11 @@ Plan de desarrollo por fases. Cada fase completada representa un punto de contro
     - [X] Añadir componente `<Canvas>` de R3F a la página principal.
     - [X] Implementar controles de cámara básicos (ej. `OrbitControls` o `PointerLockControls`).
     - [X] Asegurar que se renderiza una escena 3D vacía y navegable.
-- [ ] **Fase 3: Generador de estrellas**
-    - [ ] Crear un componente que reciba los datos de contribuciones.
-    - [ ] Mapear cada día (`date`, `count`) a coordenadas esféricas (θ, φ) en una cúpula/esfera imaginaria.
-    - [ ] Usar `count` para determinar la escala y/o luminosidad de cada estrella.
-    - [ ] Renderizar estrellas eficientemente (ej. `InstancedMesh` o `Points`).
+- [X] **Fase 3: Generador de estrellas**
+    - [X] Crear un componente que reciba los datos de contribuciones.
+    - [X] Mapear cada día (`date`, `count`) a coordenadas esféricas (θ, φ) en una cúpula/esfera imaginaria.
+    - [X] Usar `count` para determinar la escala y/o luminosidad de cada estrella.
+    - [X] Renderizar estrellas eficientemente (ej. `InstancedMesh` o `Points`).
 - [ ] **Fase 4: Ambientación**
     - [ ] Crear un suelo simple (ej. `PlaneGeometry` con textura o material).
     - [ ] Añadir montañas low-poly decorativas en el horizonte (ej. `ConeGeometry` variadas).

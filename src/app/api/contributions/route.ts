@@ -89,11 +89,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Normalización simple inicial: Aplanar los días
-    const contributions: { date: string; count: number }[] = contributionCalendar.weeks.flatMap(
+    const contributions: { date: string; count: number; weekday: number }[] = contributionCalendar.weeks.flatMap(
         (week: ContributionWeek) =>
             week.contributionDays.map((day: ContributionDay) => ({
                 date: day.date,
                 count: day.contributionCount,
+                weekday: day.weekday
             }))
     );
 
