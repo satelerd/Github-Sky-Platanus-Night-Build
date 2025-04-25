@@ -7,11 +7,11 @@ Plan de desarrollo por fases. Cada fase completada representa un punto de contro
     - [X] Crear `README.md` inicial.
     - [X] Crear `TODO.md` con fases.
     - [ ] Configurar despliegue inicial en Vercel (opcional por ahora).
-- [ ] **Fase 1: API de datos**
-    - [ ] Crear ruta `app/api/contributions/route.ts`.
-    - [ ] Implementar query GraphQL a la API de GitHub usando `GITHUB_TOKEN`.
-    - [ ] Normalizar datos de respuesta a formato `[{date, count}]`.
-    - [ ] Asegurar que la API devuelve un JSON con ~365 días de datos.
+- [X] **Fase 1: API de datos**
+    - [X] Crear ruta `app/api/contributions/route.ts`.
+    - [X] Implementar query GraphQL a la API de GitHub usando `GITHUB_TOKEN`.
+    - [X] Normalizar datos de respuesta a formato `[{date, count}]`.
+    - [X] Asegurar que la API devuelve un JSON con ~365 días de datos.
 - [ ] **Fase 2: Base 3D**
     - [ ] Instalar dependencias: `three`, `@react-three/fiber`, `@react-three/drei`.
     - [ ] Añadir componente `<Canvas>` de R3F a la página principal.
