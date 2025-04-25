@@ -12,11 +12,11 @@ Plan de desarrollo por fases. Cada fase completada representa un punto de contro
     - [X] Implementar query GraphQL a la API de GitHub usando `GITHUB_TOKEN`.
     - [X] Normalizar datos de respuesta a formato `[{date, count}]`.
     - [X] Asegurar que la API devuelve un JSON con ~365 días de datos.
-- [ ] **Fase 2: Base 3D**
-    - [ ] Instalar dependencias: `three`, `@react-three/fiber`, `@react-three/drei`.
-    - [ ] Añadir componente `<Canvas>` de R3F a la página principal.
-    - [ ] Implementar controles de cámara básicos (ej. `OrbitControls` o `PointerLockControls`).
-    - [ ] Asegurar que se renderiza una escena 3D vacía y navegable.
+- [X] **Fase 2: Base 3D**
+    - [X] Instalar dependencias: `three`, `@react-three/fiber`, `@react-three/drei`.
+    - [X] Añadir componente `<Canvas>` de R3F a la página principal.
+    - [X] Implementar controles de cámara básicos (ej. `OrbitControls` o `PointerLockControls`).
+    - [X] Asegurar que se renderiza una escena 3D vacía y navegable.
 - [ ] **Fase 3: Generador de estrellas**
     - [ ] Crear un componente que reciba los datos de contribuciones.
     - [ ] Mapear cada día (`date`, `count`) a coordenadas esféricas (θ, φ) en una cúpula/esfera imaginaria.
