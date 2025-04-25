@@ -2,7 +2,6 @@
 
 import * as THREE from 'three';
 import { useMemo, useRef, useEffect } from 'react';
-import { useFrame } from '@react-three/fiber';
 
 interface Contribution {
   date: string;
@@ -82,13 +81,6 @@ export default function Stars({ contributions }: StarsProps) {
     meshRef.current.count = instances.length; // Asegurar que el count es correcto
     console.log(`Rendering ${instances.length} stars.`);
   }, [instances]);
-
-  // Marcar parámetros no usados con _
-  useFrame((_state, _delta) => {
-     if (meshRef.current) {
-       // meshRef.current.rotation.y += _delta * 0.01;
-     }
-  });
 
   // Renderizar el InstancedMesh. El número máximo de instancias debe ser >= al número de días posibles (~366)
   return (
