@@ -20,15 +20,6 @@ interface JoystickData {
     distance: number | null; // Distancia desde el centro (0 a 1 o más? revisar doc)
 }
 
-// Definir props para Scene (añadir joysticks)
-interface SceneProps {
-  contributions: Contribution[];
-  onInteract: () => void; 
-  onCanInteractChange: (canInteract: boolean) => void; 
-  moveJoystick: JoystickData; // Añadir prop
-  lookJoystick: JoystickData; // Añadir prop
-}
-
 // Importamos el componente Scene dinámicamente y deshabilitamos SSR
 const Scene = dynamic(() => import('@/components/Scene'), {
   ssr: false,

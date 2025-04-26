@@ -2,7 +2,7 @@
 
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
-import { RefObject, useMemo } from 'react';
+import { RefObject } from 'react';
 
 // Copiar tipo JoystickData de page.tsx o importarlo si se mueve a un archivo compartido
 interface JoystickData {
@@ -28,7 +28,6 @@ const downVector = new THREE.Vector3(0, -1, 0);
 const moveDirection = new THREE.Vector3();
 const cameraDirection = new THREE.Vector3();
 const rotationEuler = new THREE.Euler(0, 0, 0, 'YXZ'); // Orden para first-person
-const rotationQuaternion = new THREE.Quaternion();
 
 export default function MobilePlayer({ groundRef, moveJoystick, lookJoystick }: MobilePlayerProps) {
   const { camera } = useThree(); // Obtener cámara del contexto R3F

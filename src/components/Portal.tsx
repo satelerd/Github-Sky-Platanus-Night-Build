@@ -6,15 +6,13 @@ import * as THREE from 'three';
 
 interface PortalProps {
     position?: [number, number, number];
-    children?: React.ReactNode; // Children se renderizará ahora fuera del portal (HUD)
 }
 
 // Materiales
 const material1 = new THREE.MeshStandardMaterial({ color: '#0055FF', emissive: '#0033DD', emissiveIntensity: 0.8, roughness: 0.2, metalness: 0.1 });
-const material2 = new THREE.MeshStandardMaterial({ color: '#00AAFF', emissive: '#0088DD', emissiveIntensity: 0.8, roughness: 0.2, metalness: 0.1 });
 const particleMaterial = new THREE.MeshStandardMaterial({ color: '#FFFFFF', emissive: '#FFFFFF', emissiveIntensity: 1 });
 
-const Portal = forwardRef<THREE.Group, PortalProps>(({ position = [0, 10, -50], children }, ref) => {
+const Portal = forwardRef<THREE.Group, PortalProps>(({ position = [0, 10, -50] }, ref) => {
     const knotRef = useRef<THREE.Mesh>(null!);
     const particlesRef = useRef<THREE.InstancedMesh>(null!);
     const groupRef = useRef<THREE.Group>(null!); // Ref interna para el grupo de partículas
@@ -73,9 +71,6 @@ const Portal = forwardRef<THREE.Group, PortalProps>(({ position = [0, 10, -50], 
             <group ref={groupRef}>
                 <instancedMesh ref={particlesRef} args={[sphereGeometry, particleMaterial, particleCount]} />
             </group>
-            
-            {/* Children (el prompt HTML) ya no se renderiza aquí */} 
-            {/* {children} */}
         </group>
     );
 });

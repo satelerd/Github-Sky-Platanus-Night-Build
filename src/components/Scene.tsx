@@ -2,7 +2,7 @@
 
 import * as THREE from 'three'; // Importar THREE completo
 import { Canvas, useThree } from '@react-three/fiber'; // Importar Canvas y useThree
-import { PointerLockControls, OrbitControls, Html } from '@react-three/drei'; // Añadir OrbitControls y Html
+import { PointerLockControls, Html } from '@react-three/drei'; // Quitar OrbitControls
 import { useRef, useState, useEffect } from 'react'; // Necesitamos useEffect
 import Stars from './Stars'; // Importar el nuevo componente
 import WavyGround from './WavyGround'; // Importar suelo ondulado
@@ -45,7 +45,8 @@ function SceneContent({
     lookJoystick  // Recibir prop
 }: SceneProps) {
   const { gl, camera } = useThree(); // Hook para acceder al contexto R3F
-  const controlsRef = useRef<any>(null); // Para PointerLock o Orbit
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const controlsRef = useRef<any>(null); // Mantener any por ahora, PointerLockControls es difícil de tipar
   const groundRef = useRef<THREE.Mesh>(null!);
   const portalRef = useRef<THREE.Group>(null!);
   const [isLocked, setIsLocked] = useState(false); // Solo para PointerLock
@@ -161,23 +162,12 @@ export default function Scene({
     lookJoystick  // Recibir prop
 }: SceneProps) {
 
-  // Extraer la lógica del canvas aquí
-  const handleCanvasClick = (event: React.MouseEvent<HTMLDivElement>) => {
-      // El bloqueo de puntero se maneja en PointerLockControls
-      // La interacción táctil se maneja en SceneContent con onPointerDown
-  };
-
   return (
-    // Simplificar el div wrapper, el click se maneja en el Canvas o PointerLockControls
     <div style={{ width: '100%', height: '100%' }}>
         <Canvas
             style={{ background: '#0A0A18' }}
             camera={{ fov: 75, position: [0, playerHeight, 0] }} // Posición inicial ligeramente elevada
             shadows
-            // Pasar el evento onPointerDown a SceneContent
-            // onPointerDown={(event) => {
-                // Ya no necesitamos este handler aquí
-            // }}
         >
            <SceneContent 
                contributions={contributions} 
