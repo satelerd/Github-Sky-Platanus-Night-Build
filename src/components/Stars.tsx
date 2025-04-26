@@ -54,7 +54,6 @@ export default function Stars({ contributions, onStarHover }: StarsProps) {
     const startX = - (6 * daySpacing) / 2; // Centrar horizontalmente
     const startZ = (numWeeks * weekSpacing) / 2; // Empezar desde "arriba" (Z negativo)
 
-    let currentInstanceId = 0; // Track instance ID separately from original index
     for (let i = 0; i < totalDays; i++) {
       const contribution = contributions[i];
       if (contribution.count === 0) continue; // Saltar días sin contribuciones
@@ -85,11 +84,8 @@ export default function Stars({ contributions, onStarHover }: StarsProps) {
           date: contribution.date,
           count: contribution.count,
           originalIndex: i // Guardamos el índice original para referencia si es necesario
-          // instanceId: currentInstanceId // Podríamos guardar el ID de instancia aquí si quisiéramos
       });
-      currentInstanceId++; // Incrementar solo cuando añadimos una instancia
     }
-    console.log(`[Stars.tsx] Calculated ${temp.length} instances with data.`); // Log temporal
     return temp;
   }, [contributions]);
 
