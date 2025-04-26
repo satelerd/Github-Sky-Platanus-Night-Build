@@ -23,7 +23,6 @@ export default function SphericalGrid({
 
   const daysPerYearGrid = 366;
   const longitudeLinesPerYear = Math.ceil(daysPerYearGrid / 7);
-  const segmentsPerLine = 32;
 
   const arcRadius = radius * 2.5;
   const arcBaseHeight = 5;
