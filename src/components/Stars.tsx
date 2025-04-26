@@ -84,11 +84,14 @@ export default function Stars({ contributions }: StarsProps) {
     meshRef.current.instanceMatrix.needsUpdate = true;
     // Si usamos color: meshRef.current.instanceColor.needsUpdate = true;
     meshRef.current.count = instances.length; // Asegurar que el count es correcto
-    console.log(`Rendering ${instances.length} stars.`);
   }, [instances]);
 
   // Renderizar el InstancedMesh. El número máximo de instancias debe ser >= al número de días posibles (~366)
   return (
-    <instancedMesh ref={meshRef} args={[starGeometry, starMaterial, 366]} />
+    <instancedMesh 
+        ref={meshRef} 
+        args={[starGeometry, starMaterial, 366]} 
+        frustumCulled={false}
+    />
   );
 } 
