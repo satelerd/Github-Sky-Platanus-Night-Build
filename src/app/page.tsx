@@ -2,6 +2,8 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback } from 'react';
 import ContributionGraph from '@/components/ContributionGraph';
+import { Joystick } from 'react-joystick-component';
+import { IJoystickUpdateEvent } from 'react-joystick-component/build/lib/Joystick';
 
 // Definir la interfaz para los datos de contribución que esperamos de la API
 interface Contribution {
@@ -10,12 +12,22 @@ interface Contribution {
   weekday: number;
 }
 
-// Mover la definición de SceneProps aquí si Scene.tsx no la exporta
-// O importar SceneProps desde Scene.tsx si la exporta
-// ELIMINAR - SceneProps no se usa aquí
-// interface SceneProps {
-//  contributions: Contribution[];
-// }
+// Tipos para los datos del Joystick (simplificado)
+interface JoystickData {
+    x: number | null; // Eje X (-1 a 1)
+    y: number | null; // Eje Y (-1 a 1)
+    direction: string | null; // FORWARD, BACKWARD, LEFT, RIGHT
+    distance: number | null; // Distancia desde el centro (0 a 1 o más? revisar doc)
+}
+
+// Definir props para Scene (añadir joysticks)
+interface SceneProps {
+  contributions: Contribution[];
+  onInteract: () => void; 
+  onCanInteractChange: (canInteract: boolean) => void; 
+  moveJoystick: JoystickData; // Añadir prop
+  lookJoystick: JoystickData; // Añadir prop
+}
 
 // Importamos el componente Scene dinámicamente y deshabilitamos SSR
 const Scene = dynamic(() => import('@/components/Scene'), {
@@ -29,6 +41,19 @@ export default function Home() {
   const [contributions, setContributions] = useState<Contribution[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isInputVisible, setIsInputVisible] = useState<boolean>(false); // Estado para visibilidad
+  const [canInteractWithPortal, setCanInteractWithPortal] = useState<boolean>(false); // Estado para prompt HUD
+  const [isMobile, setIsMobile] = useState<boolean>(false); // Estado para detectar móvil
+
+  // Estados para los Joysticks
+  const [moveJoystickData, setMoveJoystickData] = useState<JoystickData>({ x: null, y: null, direction: null, distance: null });
+  const [lookJoystickData, setLookJoystickData] = useState<JoystickData>({ x: null, y: null, direction: null, distance: null });
+
+  // Detectar móvil al montar
+  useEffect(() => {
+      const checkMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      setIsMobile(checkMobile);
+  }, []);
 
   // useCallback también debe estar DENTRO del componente si usa estados/setters
   const fetchContributions = useCallback(async (user: string) => {
@@ -69,30 +94,200 @@ export default function Home() {
       const formData = new FormData(event.currentTarget);
       const newUser = formData.get('usernameInput') as string;
       setUsername(newUser);
+      setIsInputVisible(false); // Ocultar input después de enviar
   };
 
-  return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
-      <div style={{ position: 'absolute', top: '10px', left: '10px', right: '10px', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div style={{ background: 'rgba(0,0,0,0.7)', padding: '10px', borderRadius: '5px' }}>
-            <form onSubmit={handleUserSubmit} style={{ display: 'flex', gap: '5px' }}>
-                <input
-                    type="text"
-                    name="usernameInput"
-                    defaultValue={username}
-                    placeholder="GitHub Username"
-                    style={{ padding: '5px', color: '#333' }}
-                />
-                <button type="submit" disabled={isLoading} style={{ padding: '5px' }}>
-                    {isLoading ? 'Loading...' : 'Load Sky'}
-                </button>
-            </form>
-            {error && <p style={{ color: 'red', marginTop: '5px' }}>Error: {error}</p>}
-        </div>
+  // Función para mostrar el input (se pasará a Player)
+  const showUserInput = useCallback(() => {
+      console.log("[page.tsx] Showing user input");
+      setIsInputVisible(true);
+      // Podríamos querer desbloquear el puntero aquí, pero es más fácil hacerlo en Scene/Player
+  }, []);
 
+  // --- Handlers para Joysticks ---
+  const handleMove = useCallback((event: IJoystickUpdateEvent) => {
+    // Mapear event.type a null si es necesario? El tipo base es number | null
+    setMoveJoystickData({
+        x: event.x, 
+        y: event.y, 
+        direction: event.direction, 
+        distance: event.distance
+    });
+  }, []);
+
+  const handleMoveStop = useCallback(() => {
+    setMoveJoystickData({ x: null, y: null, direction: null, distance: null });
+  }, []);
+
+  const handleLook = useCallback((event: IJoystickUpdateEvent) => {
+    setLookJoystickData({
+        x: event.x,
+        y: event.y,
+        direction: event.direction,
+        distance: event.distance
+    });
+  }, []);
+
+  const handleLookStop = useCallback(() => {
+    setLookJoystickData({ x: null, y: null, direction: null, distance: null });
+  }, []);
+
+  return (
+    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+      {/* Mover UI superpuesta aquí, condicional a isInputVisible */} 
+      {isInputVisible && (
+          <div style={modalOverlayStyle}>
+            <div style={modalContentStyle}>
+              <h2 style={{ color: '#E0E0E0', marginBottom: '20px', marginTop: '0', textAlign: 'center' }}>Change GitHub User</h2>
+              <form onSubmit={handleUserSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px', width: '100%' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                    <label htmlFor='usernameInput' style={{ color: '#B0B0B0', fontSize: '14px' }}>Username:</label>
+                    <input
+                        id='usernameInput' // Asociar con label
+                        type="text"
+                        name="usernameInput"
+                        defaultValue={username}
+                        placeholder="Enter GitHub Username"
+                        style={inputStyle} // Usar estilo constante
+                        autoFocus
+                        required // Hacerlo requerido
+                    />
+                </div>
+                {error && <p style={{ color: '#FF6B6B', marginTop: '0px', marginBottom: '0px', fontSize: '14px', textAlign: 'center' }}>Error: {error}</p>}
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', marginTop: '10px' }}>
+                    <button type="button" onClick={() => setIsInputVisible(false)} style={{ ...buttonStyle, backgroundColor: '#555' }}>
+                        Cancel
+                    </button>
+                    <button type="submit" disabled={isLoading} style={{ ...buttonStyle, backgroundColor: isLoading ? '#4CAF50' : '#4CAF50' }}>
+                        {isLoading ? 'Loading...' : 'Load Sky'}
+                    </button>
+                </div>
+              </form>
+            </div>
+          </div>
+      )}
+
+      {/* Siempre mostrar el gráfico de contribución en la esquina superior derecha */} 
+       <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 1 }}>
         <ContributionGraph contributions={contributions} />
       </div>
-      <Scene contributions={contributions} />
+
+      {/* Crosshair (+) */} 
+      <div style={crosshairStyle}>+</div>
+
+      {/* Prompt [E] Interact (HUD Condicional) */} 
+      {!isMobile && canInteractWithPortal && (
+          <div style={interactPromptStyle}>[E] Interact</div>
+      )}
+
+      {/* Joysticks (solo en móvil) */} 
+      {isMobile && (
+          <>
+              {/* Joystick Izquierdo (Vista/Look) */} 
+              <div style={{ position: 'absolute', bottom: '30px', left: '30px', zIndex: 6 }}>
+                  <Joystick 
+                      size={100} 
+                      baseColor="rgba(255, 255, 255, 0.2)" 
+                      stickColor="rgba(255, 255, 255, 0.5)" 
+                      move={handleLook} // <-- IZQUIERDO para VISTA
+                      stop={handleLookStop}
+                      throttle={150} 
+                      // minDistance={25} // Quizás no necesario para mirar
+                  />
+              </div>
+              {/* Joystick Derecho (Movimiento/Move) */} 
+              <div style={{ position: 'absolute', bottom: '30px', right: '30px', zIndex: 6 }}>
+                  <Joystick 
+                      size={100} 
+                      baseColor="rgba(255, 255, 255, 0.2)" 
+                      stickColor="rgba(255, 255, 255, 0.5)" 
+                      move={handleMove} // <-- DERECHO para MOVER
+                      stop={handleMoveStop}
+                      throttle={150}
+                      minDistance={25} // Mantener para movimiento
+                  />
+              </div>
+          </>
+      )}
+
+      <Scene  // <-- DESCOMENTAR
+          contributions={contributions} 
+          onInteract={showUserInput} 
+          onCanInteractChange={setCanInteractWithPortal}
+          moveJoystick={moveJoystickData}
+          lookJoystick={lookJoystickData}
+      /> 
     </div>
   );
 }
+
+// --- Estilos para el Modal ---
+const modalOverlayStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+};
+
+const modalContentStyle: React.CSSProperties = {
+    background: '#2D2D2D',
+    padding: '30px',
+    borderRadius: '10px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    boxShadow: '0 5px 15px rgba(0,0,0,0.3)',
+    minWidth: '300px',
+};
+
+const inputStyle: React.CSSProperties = {
+    padding: '10px',
+    color: '#333',
+    borderRadius: '4px',
+    border: '1px solid #555',
+    fontSize: '16px',
+};
+
+const buttonStyle: React.CSSProperties = {
+    padding: '10px 20px',
+    borderRadius: '4px',
+    border: 'none',
+    color: 'white',
+    cursor: 'pointer',
+    fontSize: '16px',
+    flexGrow: 1, // Para que ambos botones ocupen espacio
+};
+
+// Estilo para el Crosshair
+const crosshairStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    color: 'white',
+    fontSize: '20px',
+    fontWeight: 'bold',
+    pointerEvents: 'none', // Muy importante
+    zIndex: 5, // Asegurar que esté sobre el canvas pero debajo del modal
+};
+
+// Estilo para el Prompt de Interacción
+const interactPromptStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: 'calc(50% + 30px)', // Posicionar debajo del crosshair
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    color: 'white',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    padding: '5px 10px',
+    borderRadius: '5px',
+    fontSize: '16px',
+    pointerEvents: 'none',
+    zIndex: 5,
+};

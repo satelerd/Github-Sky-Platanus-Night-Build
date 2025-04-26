@@ -1,13 +1,15 @@
 'use client'; // Este componente *sí* necesita ejecutarse en el cliente
 
 import * as THREE from 'three'; // Importar THREE completo
-import { Canvas } from '@react-three/fiber'; // Importar Canvas
-import { PointerLockControls } from '@react-three/drei'; // Mantener PointerLockControls
-import { useRef, useState } from 'react'; // Necesitamos useEffect de nuevo
+import { Canvas, useThree } from '@react-three/fiber'; // Importar Canvas y useThree
+import { PointerLockControls, OrbitControls, Html } from '@react-three/drei'; // Añadir OrbitControls y Html
+import { useRef, useState, useEffect } from 'react'; // Necesitamos useEffect
 import Stars from './Stars'; // Importar el nuevo componente
 import WavyGround from './WavyGround'; // Importar suelo ondulado
 import Player from './Player'; // Importar el nuevo componente Player
 import Mountains from './Mountains'; // Importar Montañas
+import Portal from './Portal'; // Importar el Portal
+import MobilePlayer from './MobilePlayer'; // Importar el nuevo componente MobilePlayer
 
 // Definir la interfaz para los datos que esperamos recibir
 // ... (interfaz Contribution)
@@ -17,81 +19,190 @@ interface Contribution {
   weekday: number;
 }
 
+// Tipos para los datos del Joystick (importados o definidos en page.tsx)
+interface JoystickData {
+    x: number | null; 
+    y: number | null; 
+    direction: string | null; 
+    distance: number | null;
+}
+
 // Definir las props que acepta el componente
 interface SceneProps {
   contributions: Contribution[];
+  onInteract: () => void; // Callback para iniciar interacción
+  onCanInteractChange: (canInteract: boolean) => void; // Callback para estado de interacción
+  moveJoystick: JoystickData; // Añadir prop
+  lookJoystick: JoystickData; // Añadir prop
 }
 
-export default function Scene({ contributions }: SceneProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const controlsRef = useRef<any>(null); // Volver a any y deshabilitar linter
-  const groundRef = useRef<THREE.Mesh>(null!); // Ref para el suelo
-  const [isLocked, setIsLocked] = useState(false);
+// Componente interno para manejar la lógica dependiente del contexto de R3F
+function SceneContent({ 
+    contributions, 
+    onInteract, 
+    onCanInteractChange, 
+    moveJoystick, // Recibir prop
+    lookJoystick  // Recibir prop
+}: SceneProps) {
+  const { gl, camera } = useThree(); // Hook para acceder al contexto R3F
+  const controlsRef = useRef<any>(null); // Para PointerLock o Orbit
+  const groundRef = useRef<THREE.Mesh>(null!);
+  const portalRef = useRef<THREE.Group>(null!);
+  const [isLocked, setIsLocked] = useState(false); // Solo para PointerLock
+  const [isMobile, setIsMobile] = useState(false);
 
-  const handleCanvasClick = () => {
-    controlsRef.current?.lock(); // Quitar ts-ignore si usamos any
+  // Detección simple de móvil (podría mejorarse)
+  useEffect(() => {
+      const checkMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      console.log("Is Mobile?", checkMobile);
+      setIsMobile(checkMobile);
+      // Forzar OrbitControls si PointerLock no está disponible (mejor que userAgent)
+      // const isPointerLockAvailable = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
+      // setIsMobile(!isPointerLockAvailable);
+  }, []);
+
+  useEffect(() => {
+      const canvasElement = gl.domElement;
+      if (!isMobile || !canvasElement) return;
+
+      const onCanvasPointerDown = (event: PointerEvent) => {
+          if (!portalRef.current) return;
+
+          const pointer = new THREE.Vector2();
+          pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+          pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+          const raycaster = new THREE.Raycaster();
+          raycaster.setFromCamera(pointer, camera);
+          const intersects = raycaster.intersectObject(portalRef.current);
+
+          if (intersects.length > 0 && intersects[0].distance < interactDistance * 1.5) {
+              console.log("INTERACTION TRIGGERED (Tap)");
+              onInteract();
+          }
+      };
+
+      canvasElement.addEventListener('pointerdown', onCanvasPointerDown);
+      return () => {
+          canvasElement.removeEventListener('pointerdown', onCanvasPointerDown);
+      };
+
+  }, [isMobile, gl.domElement, camera, portalRef, onInteract]); // Añadir dependencias
+
+  return (
+    <>
+      {/* Añadir Niebla */}
+      <fog attach="fog" args={['#0A0A18', 100, 600]} /> {/* Mismo color que el fondo */}
+
+      {/* Iluminación Nocturna */}
+      <hemisphereLight args={[0x444488, 0x111122, 0.8]} />
+      <directionalLight
+          position={[40, 60, -50]}
+          intensity={0.3}
+          castShadow
+          shadow-mapSize-width={1024}
+          shadow-mapSize-height={1024}
+      />
+
+      {/* Controles Condicionales */}
+      {isMobile ? (
+        <MobilePlayer 
+            groundRef={groundRef} 
+            moveJoystick={moveJoystick} 
+            lookJoystick={lookJoystick} 
+        />
+      ) : (
+        <>
+          <PointerLockControls
+              ref={controlsRef}
+              onLock={() => setIsLocked(true)}
+              onUnlock={() => setIsLocked(false)}
+          />
+          <Player
+              controlsRef={controlsRef}
+              groundRef={groundRef}
+              portalRef={portalRef}
+              isLocked={isLocked}
+              onInteract={onInteract}
+              onCanInteractChange={onCanInteractChange}
+          />
+        </>
+      )}
+
+      {/* Renderizar las estrellas */}
+      <Stars contributions={contributions} />
+
+      {/* Suelo ondulado */}
+      <WavyGround ref={groundRef} />
+
+      {/* Montañas */}
+      <Mountains count={60} radius={350} />
+
+      {/* Portal de interacción (sin children ahora) */}
+      <Portal ref={portalRef} />
+
+      {/* Overlay "Click to Explore" solo para escritorio, envuelto en <Html> */}
+      {!isMobile && !isLocked && (
+        <Html center style={{ pointerEvents: 'none' }}> 
+            <div style={overlayStyle}>
+                Click to Explore
+            </div>
+        </Html>
+      )}
+    </>
+  );
+}
+
+export default function Scene({ 
+    contributions, 
+    onInteract, 
+    onCanInteractChange, 
+    moveJoystick, // Recibir prop
+    lookJoystick  // Recibir prop
+}: SceneProps) {
+
+  // Extraer la lógica del canvas aquí
+  const handleCanvasClick = (event: React.MouseEvent<HTMLDivElement>) => {
+      // El bloqueo de puntero se maneja en PointerLockControls
+      // La interacción táctil se maneja en SceneContent con onPointerDown
   };
 
   return (
-    <div style={{ width: '100%', height: '100%', cursor: isLocked ? 'none' : 'pointer' }} onClick={handleCanvasClick}>
+    // Simplificar el div wrapper, el click se maneja en el Canvas o PointerLockControls
+    <div style={{ width: '100%', height: '100%' }}>
         <Canvas
-            style={{ background: '#0A0A18' }} // Punto intermedio azul muy oscuro
-            camera={{ fov: 75 }}
+            style={{ background: '#0A0A18' }}
+            camera={{ fov: 75, position: [0, playerHeight, 0] }} // Posición inicial ligeramente elevada
             shadows
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            onPointerDown={(_e) => { if (!isLocked) controlsRef.current?.lock(); }} // Volver a _e
+            // Pasar el evento onPointerDown a SceneContent
+            // onPointerDown={(event) => {
+                // Ya no necesitamos este handler aquí
+            // }}
         >
-            {/* Añadir Niebla */}
-            <fog attach="fog" args={['#0A0A18', 100, 600]} /> {/* Mismo color que el fondo */}
-
-            {/* Iluminación Nocturna (Reajustar ligeramente si es necesario) */}
-            <hemisphereLight args={[0x444488, 0x111122, 0.8]} /> {/* Un poco más de luz ambiental */}
-            <directionalLight
-                position={[40, 60, -50]}
-                intensity={0.3} // Luna un poco más brillante
-                castShadow
-                shadow-mapSize-width={1024}
-                shadow-mapSize-height={1024}
-            />
-
-            {/* Controles FPS */}
-            <PointerLockControls
-                ref={controlsRef}
-                onLock={() => { setIsLocked(true); }}
-                onUnlock={() => { setIsLocked(false); }}
-            />
-
-            {/* Renderizar las estrellas */}
-            <Stars contributions={contributions} />
-
-            {/* Suelo ondulado */}
-            <WavyGround ref={groundRef} />
-
-            {/* Montañas */}
-            <Mountains count={60} radius={350} />
-
-            {/* Componente Player para manejar lógica de frame (grounding) */}
-            <Player controlsRef={controlsRef} groundRef={groundRef} isLocked={isLocked} />
-
+           <SceneContent 
+               contributions={contributions} 
+               onInteract={onInteract} 
+               onCanInteractChange={onCanInteractChange} 
+               moveJoystick={moveJoystick} // Pasar prop
+               lookJoystick={lookJoystick} // Pasar prop
+           />
         </Canvas>
-        {/* Overlay */}
-        {!isLocked && (
-            <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                color: 'white',
-                background: 'rgba(0,0,0,0.7)',
-                padding: '15px 25px',
-                borderRadius: '8px',
-                fontSize: '1.2em',
-                textAlign: 'center',
-                pointerEvents: 'none'
-            }}>
-                Click to Explore
-            </div>
-        )}
     </div>
   );
-} 
+}
+
+// Estilos para el overlay (reutilizados)
+const overlayStyle: React.CSSProperties = {
+    color: 'white',
+    background: 'rgba(0,0,0,0.7)',
+    padding: '10px 20px',
+    borderRadius: '8px',
+    fontSize: '1.1em',
+    textAlign: 'center',
+    pointerEvents: 'none'
+};
+
+// Constantes movidas fuera si es posible
+const playerHeight = 5;
+const interactDistance = 20;
+ 
