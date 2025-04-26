@@ -152,5 +152,5 @@ interface Contribution {
 }
 
 // Tipos para la respuesta de la API de GitHub
-interface GitHubContributionDay {
-} 
+// interface GitHubContributionDay {
+// } 

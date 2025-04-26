@@ -75,7 +75,7 @@ export default function SphericalGrid({
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
     return geometry;
 
-  }, [radius, latitudeLines, longitudeLinesPerYear, segmentsPerLine, totalDays, arcRadius]);
+  }, [latitudeLines, longitudeLinesPerYear, totalDays, arcRadius]);
 
   const material = useMemo(() => {
     const mat = lineMaterial.clone();
