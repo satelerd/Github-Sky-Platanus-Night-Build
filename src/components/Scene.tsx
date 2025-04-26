@@ -10,6 +10,7 @@ import Player from './Player'; // Importar el nuevo componente Player
 import Mountains from './Mountains'; // Importar Montañas
 import Portal from './Portal'; // Importar el Portal
 import MobilePlayer from './MobilePlayer'; // Importar el nuevo componente MobilePlayer
+import { EffectComposer, Bloom } from '@react-three/postprocessing'; // <-- IMPORTAR EFECTOS
 
 // Definir la interfaz para los datos que esperamos recibir
 // ... (interfaz Contribution)
@@ -34,6 +35,7 @@ interface SceneProps {
   onCanInteractChange: (canInteract: boolean) => void; // Callback para estado de interacción
   moveJoystick: JoystickData; // Añadir prop
   lookJoystick: JoystickData; // Añadir prop
+  onStarHover: (data: TooltipData | null) => void; // <-- Añadir prop
 }
 
 // Componente interno para manejar la lógica dependiente del contexto de R3F
@@ -42,7 +44,8 @@ function SceneContent({
     onInteract, 
     onCanInteractChange, 
     moveJoystick, // Recibir prop
-    lookJoystick  // Recibir prop
+    lookJoystick, // Recibir prop
+    onStarHover // <-- Recibir prop
 }: SceneProps) {
   const { gl, camera } = useThree(); // Hook para acceder al contexto R3F
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -92,20 +95,45 @@ function SceneContent({
 
   return (
     <>
-      {/* Añadir Niebla */}
-      <fog attach="fog" args={['#0A0A18', 100, 600]} /> {/* Mismo color que el fondo */}
+      {/* Envolver contenido 3D con EffectComposer */} 
+      <EffectComposer>
+        {/* Añadir Niebla */} 
+        {/* La niebla puede interactuar de forma extraña con postprocessing a veces,
+            quizás sea mejor quitarla o ajustarla si usamos bloom */}
+        {/* <fog attach="fog" args={['#0A0A18', 100, 600]} /> */}
 
-      {/* Iluminación Nocturna */}
-      <hemisphereLight args={[0x444488, 0x111122, 0.8]} />
-      <directionalLight
-          position={[40, 60, -50]}
-          intensity={0.3}
-          castShadow
-          shadow-mapSize-width={1024}
-          shadow-mapSize-height={1024}
-      />
+        {/* Iluminación Nocturna */} 
+        <hemisphereLight args={[0x444488, 0x111122, 0.8]} />
+        <directionalLight
+            position={[40, 60, -50]}
+            intensity={0.3}
+            castShadow
+            shadow-mapSize-width={1024}
+            shadow-mapSize-height={1024}
+        />
 
-      {/* Controles Condicionales */}
+        {/* Renderizar las estrellas */} 
+        <Stars contributions={contributions} onStarHover={onStarHover} />
+
+        {/* Suelo ondulado - Comentado para debug de tooltip */} 
+        <WavyGround ref={groundRef} />
+
+        {/* Montañas */} 
+        <Mountains count={60} radius={350} />
+
+        {/* Portal de interacción */} 
+        <Portal ref={portalRef} />
+
+        {/* Efecto Bloom */} 
+        <Bloom 
+            intensity={0.6} // Intensidad general del brillo
+            luminanceThreshold={0.3} // Qué tan brillante debe ser algo para brillar (0=todo, 1=nada)
+            luminanceSmoothing={0.2} // Suavizado del umbral
+            mipmapBlur // Mejora calidad del blur
+        />
+      </EffectComposer>
+
+      {/* Controles y Player FUERA del EffectComposer */} 
       {isMobile ? (
         <MobilePlayer 
             groundRef={groundRef} 
@@ -130,19 +158,7 @@ function SceneContent({
         </>
       )}
 
-      {/* Renderizar las estrellas */}
-      <Stars contributions={contributions} />
-
-      {/* Suelo ondulado */}
-      <WavyGround ref={groundRef} />
-
-      {/* Montañas */}
-      <Mountains count={60} radius={350} />
-
-      {/* Portal de interacción (sin children ahora) */}
-      <Portal ref={portalRef} />
-
-      {/* Overlay "Click to Explore" solo para escritorio, envuelto en <Html> */}
+      {/* Overlays HTML FUERA del EffectComposer */} 
       {!isMobile && !isLocked && (
         <Html center style={{ pointerEvents: 'none' }}> 
             <div style={overlayStyle}>
@@ -159,7 +175,8 @@ export default function Scene({
     onInteract, 
     onCanInteractChange, 
     moveJoystick, // Recibir prop
-    lookJoystick  // Recibir prop
+    lookJoystick, // Recibir prop
+    onStarHover // <-- Recibir prop
 }: SceneProps) {
 
   return (
@@ -175,6 +192,7 @@ export default function Scene({
                onCanInteractChange={onCanInteractChange} 
                moveJoystick={moveJoystick} // Pasar prop
                lookJoystick={lookJoystick} // Pasar prop
+               onStarHover={onStarHover} // <-- Pasar prop
            />
         </Canvas>
     </div>
@@ -195,4 +213,10 @@ const overlayStyle: React.CSSProperties = {
 // Constantes movidas fuera si es posible
 const playerHeight = 5;
 const interactDistance = 20;
+
+// Definir TooltipData aquí también o importarla
+interface TooltipData {
+    date: string;
+    count: number;
+}
  

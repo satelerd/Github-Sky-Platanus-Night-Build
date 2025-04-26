@@ -38,9 +38,9 @@ Plan de desarrollo por fases. Cada fase completada representa un punto de contro
         - [X] Detección de dispositivo móvil.
         - [X] Joysticks virtuales en pantalla (movimiento y vista).
         - [X] Controles específicos (`MobilePlayer`).
-- [ ] **Fase 6: Pulido & FX**
-    - [ ] Añadir efectos visuales sutiles (ej. niebla, partículas, bloom).
-    - [ ] Implementar tooltips/información al pasar el cursor sobre una estrella (mostrar fecha, nº commits).
+- [X] **Fase 6: Pulido & FX**
+    - [X] Añadir efecto Bloom con `@react-three/postprocessing`.
+    - [X] Implementar tooltips en estrellas (hover en desktop) mostrando fecha y contribuciones en HUD.
 - [ ] **Fase 7: Deploy & demo**
     - [ ] Realizar el despliegue final a Vercel.
     - [ ] Configurar la variable de entorno `GITHUB_TOKEN` en Vercel.

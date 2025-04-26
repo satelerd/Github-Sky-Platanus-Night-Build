@@ -20,6 +20,12 @@ interface JoystickData {
     distance: number | null; // Distancia desde el centro (0 a 1 o más? revisar doc)
 }
 
+// Definir TooltipData aquí o importarla
+interface TooltipData {
+    date: string;
+    count: number;
+}
+
 // Importamos el componente Scene dinámicamente y deshabilitamos SSR
 const Scene = dynamic(() => import('@/components/Scene'), {
   ssr: false,
@@ -35,6 +41,7 @@ export default function Home() {
   const [isInputVisible, setIsInputVisible] = useState<boolean>(false); // Estado para visibilidad
   const [canInteractWithPortal, setCanInteractWithPortal] = useState<boolean>(false); // Estado para prompt HUD
   const [isMobile, setIsMobile] = useState<boolean>(false); // Estado para detectar móvil
+  const [hoveredStarData, setHoveredStarData] = useState<TooltipData | null>(null); // Estado para tooltip
 
   // Estados para los Joysticks
   const [moveJoystickData, setMoveJoystickData] = useState<JoystickData>({ x: null, y: null, direction: null, distance: null });
@@ -123,6 +130,11 @@ export default function Home() {
     setLookJoystickData({ x: null, y: null, direction: null, distance: null });
   }, []);
 
+  // --- Callback para Hover de Estrella ---
+  const handleStarHover = useCallback((data: TooltipData | null) => {
+    setHoveredStarData(data);
+  }, []);
+
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
       {/* Mover UI superpuesta aquí, condicional a isInputVisible */} 
@@ -158,17 +170,21 @@ export default function Home() {
           </div>
       )}
 
-      {/* Siempre mostrar el gráfico de contribución en la esquina superior derecha */} 
-       <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 1 }}>
+      {/* HUD Estático (Gráfico, Crosshair, Prompt E) */} 
+      <div style={hudTopRightStyle}> {/* Mover gráfico a su propio contenedor */} 
         <ContributionGraph contributions={contributions} />
       </div>
-
-      {/* Crosshair (+) */} 
       <div style={crosshairStyle}>+</div>
-
-      {/* Prompt [E] Interact (HUD Condicional) */} 
       {!isMobile && canInteractWithPortal && (
           <div style={interactPromptStyle}>[E] Interact</div>
+      )}
+
+      {/* Tooltip Estrella (HUD Condicional Top-Left) */} 
+      {hoveredStarData && (
+          <div style={starTooltipStyle}>
+              <div>Date: {hoveredStarData.date}</div>
+              <div>Contributions: {hoveredStarData.count}</div>
+          </div>
       )}
 
       {/* Joysticks (solo en móvil) */} 
@@ -201,12 +217,13 @@ export default function Home() {
           </>
       )}
 
-      <Scene  // <-- DESCOMENTAR
+      <Scene 
           contributions={contributions} 
           onInteract={showUserInput} 
           onCanInteractChange={setCanInteractWithPortal}
           moveJoystick={moveJoystickData}
           lookJoystick={lookJoystickData}
+          onStarHover={handleStarHover} // <-- Pasar handler
       /> 
     </div>
   );
@@ -281,4 +298,24 @@ const interactPromptStyle: React.CSSProperties = {
     fontSize: '16px',
     pointerEvents: 'none',
     zIndex: 5,
+};
+
+const hudTopRightStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
+    zIndex: 1,
+};
+
+const starTooltipStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: '10px',
+    left: '10px',
+    background: 'rgba(0, 0, 0, 0.7)',
+    color: 'white',
+    padding: '8px 12px',
+    borderRadius: '6px',
+    fontSize: '14px',
+    pointerEvents: 'none',
+    zIndex: 5, // Mismo nivel que crosshair/prompt E
 };

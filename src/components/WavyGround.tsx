@@ -50,7 +50,7 @@ const WavyGround = forwardRef<THREE.Mesh>((props, ref) => {
 
   return (
     // Usar la ref reenviada
-    <mesh ref={ref} geometry={geometry} position={[0, -1, 0]}> {/* Ajustar Y a -1 (ya no depende de noiseAmplitude) */}
+    <mesh ref={ref} geometry={geometry} position={[0, -1, 0]} receiveShadow>
       <meshStandardMaterial side={THREE.DoubleSide} vertexColors={true} /> {/* Habilitar vertexColors */}
     </mesh>
   );
