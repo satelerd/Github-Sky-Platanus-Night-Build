@@ -11,10 +11,10 @@ interface Contribution {
   year: number;
 }
 
-interface TooltipData {
-    date: string;
-    count: number;
-}
+// interface TooltipData {
+//     date: string;
+//     count: number;
+// }
 
 interface StarsProps {
   contributions: Contribution[];

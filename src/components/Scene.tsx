@@ -2,7 +2,7 @@
 
 import * as THREE from 'three'; // Importar THREE completo
 import { Canvas, useThree } from '@react-three/fiber'; // Importar Canvas y useThree
-import { PointerLockControls, Html } from '@react-three/drei'; // Quitar OrbitControls y Grid
+import { PointerLockControls, Html } from '@react-three/drei'; // Importar el componente para usar typeof
 import { useRef, useState, useEffect, useMemo } from 'react'; // Necesitamos useEffect y useMemo
 import Stars from './Stars'; // Importar el nuevo componente
 import WavyGround from './WavyGround'; // Importar suelo ondulado
@@ -56,8 +56,9 @@ function SceneContent({
     lookJoystick, 
     onStarHover // <-- Recibir prop para actualizar HUD
 }: SceneProps) {
-  const { gl, camera, raycaster, pointer } = useThree(); // <-- Obtener raycaster y pointer aquí
-  const controlsRef = useRef<any>(null);
+  const { gl, camera } = useThree(); // <-- Obtener solo gl y camera aquí
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const controlsRef = useRef<any>(null); // <-- Volver a any para simplificar
   const groundRef = useRef<THREE.Mesh>(null!);
   const portalRef = useRef<THREE.Group>(null!);
   const invisibleArcSurfaceRef = useRef<THREE.Mesh>(null!); // <-- Ref para la superficie invisible
@@ -97,7 +98,6 @@ function SceneContent({
       const point = event.point;
 
       // Replicar constantes de Stars.tsx
-      const arcRadius = starRadius * 2.5; 
       const arcBaseHeight = 5;
       const daySpread = 60;
       const arcSpacing = daySpread * 7 * 1.2; // Mismo cálculo que en Stars/Grid

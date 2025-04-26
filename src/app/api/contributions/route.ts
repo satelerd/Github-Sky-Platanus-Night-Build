@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // Usar el token directamente aquí es inseguro.
 // TODO: Cambiar a process.env.GITHUB_TOKEN inmediatamente.
 // Se lee desde las variables de entorno (.env.local para desarrollo)
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+// const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_GRAPHQL_URL = 'https://api.github.com/graphql';
 
 // Definimos interfaces para un tipado más estricto
@@ -149,4 +149,8 @@ interface Contribution {
   count: number;
   weekday: number;
   year: number; // <-- Añadido
+}
+
+// Tipos para la respuesta de la API de GitHub
+interface GitHubContributionDay {
 } 

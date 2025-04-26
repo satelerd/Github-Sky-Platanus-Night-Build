@@ -34,7 +34,7 @@ export default function YearLabels({ contributions, radius }: YearLabelsProps) {
 
         // getPosition ahora recibe el xOffset precalculado
         const getPosition = (dayIndex: number, dayOfWeek: number, xOffset: number): THREE.Vector3 => {
-            const totalDays = contributions.length; // Usar total global para proporción?
+            // const totalDays = contributions.length; // <-- No usado
             // const daysPerYear = 366; // O usar días por año para cálculo de t?
             const arcRadius = radius * 2.5; // ¡Asegurarse de que coincide!
             const arcBaseHeight = 5;
