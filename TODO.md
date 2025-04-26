@@ -27,11 +27,17 @@ Plan de desarrollo por fases. Cada fase completada representa un punto de contro
     - [X] Añadir montañas low-poly decorativas en el horizonte (ej. `ConeGeometry` variadas).
     - [X] Configurar iluminación ambiental (ej. `HemisphereLight`, `AmbientLight`).
     - [X] Añadir un `Skybox` o fondo estrellado (ej. `drei/Sky` o textura).
-- [ ] **Fase 5: Portal-hub (Interacción)**
-    - [ ] Crear un modelo 3D simple que represente el "portal" o punto de interacción inicial.
-    - [ ] Implementar lógica de interacción (click, raycast, tecla "E") para mostrar un input de texto (usuario de GitHub).
-    - [ ] Al enviar el formulario/input, llamar al endpoint `/api/contributions`.
-    - [ ] Usar los datos recibidos para actualizar/reconstruir la escena del cielo estrellado.
+- [X] **Fase 5: Portal-hub (Interacción & Móvil)**
+    - [X] Crear un modelo 3D abstracto (nudo + partículas) para el portal.
+    - [X] Implementar lógica de interacción:
+        - [X] Escritorio: Raycast + Tecla "E" + Prompt HUD.
+        - [X] Móvil: Tap en portal.
+    - [X] Mostrar modal mejorado para input de usuario al interactuar.
+    - [X] Conectar envío del modal a la API para actualizar estrellas.
+    - [X] Añadir soporte móvil:
+        - [X] Detección de dispositivo móvil.
+        - [X] Joysticks virtuales en pantalla (movimiento y vista).
+        - [X] Controles específicos (`MobilePlayer`).
 - [ ] **Fase 6: Pulido & FX**
     - [ ] Añadir efectos visuales sutiles (ej. niebla, partículas, bloom).
     - [ ] Implementar tooltips/información al pasar el cursor sobre una estrella (mostrar fecha, nº commits).
